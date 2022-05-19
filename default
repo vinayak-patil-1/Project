@@ -1,0 +1,114 @@
+server {
+
+          root /var/www/html;
+
+          index index.php index.html index.htm;
+
+          server_name gabonflash.com www.gabonflash.com;
+
+          location / {
+          try_files $uri $uri/ /index.php?$args;
+          }
+
+          location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
+          expires 30d;
+          add_header Pragma public;
+          add_header Cache-Control "public";
+          }
+
+          location ~ \.php$ {
+          include snippets/fastcgi-php.conf;
+          fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+          fastcgi_read_timeout 600;
+          }
+
+          location ~ /\.ht {
+          deny all;
+          }
+          
+          location /AutoBackupScript {
+          deny all;
+          try_files $uri $uri/ /index.php?$args;
+          }
+
+          location /DBBackup {
+          deny all;
+          try_files $uri $uri/ /index.php?$args;
+          }
+          
+          location /php_errorlog{
+          deny all;
+          try_files $uri $uri/ /index.php?$args;
+          }
+
+          location = /xmlrpc.php {
+          deny all;
+          access_log off;
+          log_not_found off;
+          return 444;
+          }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/gabonflash.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/gabonflash.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+server {
+    listen 80;
+	root /var/www/html/app/public;
+    index index.php index.html index.htm;
+
+    server_name app.gabonflash.com;
+    #allow   103.167.248.0/24;
+    #deny    all;
+    location / {
+    try_files $uri $uri/ /index.php?$args;
+}
+
+location ~* \.(?:ico|css|js|gif|jpe?g|png)$ {
+    expires 30d;
+    add_header Pragma public;
+    add_header Cache-Control "public";
+    #add_header Access-Control-Allow-Origin *;
+}
+location ~ \.php$ {
+          include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+    fastcgi_read_timeout 600;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+    location /php_errorlog{
+          deny all;
+          try_files $uri $uri/ /index.php?$args;
+     }
+
+}
+
+server {
+    if ($host = www.gabonflash.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = gabonflash.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+          listen 80;
+
+          server_name gabonflash.com www.gabonflash.com;
+    return 404; # managed by Certbot
+
+
+
+
+}
