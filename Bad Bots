@@ -1,3 +1,5 @@
 
 
 awk -F'(' '/GET/ {print $2}' /var/log/nginx/access.log | grep bot | sort | uniq -c | sort -rn
+
+https://www.shoutmeloud.com/robots.txt
